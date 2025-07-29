@@ -6,7 +6,7 @@
  * making it easy to use throughout the application.
  */
 
-import { ViewService, SctService } from '@penumbra-zone/protobuf';
+import { ViewService, SctService, StakeService } from '@penumbra-zone/protobuf';
 import {
   BalancesRequest,
   TransactionInfoRequest,
@@ -14,9 +14,22 @@ import {
   AppParametersRequest,
   GasPricesRequest,
   TransactionInfoByHashRequest,
+  DelegationsByAddressIndexRequest,
+  DelegationsByAddressIndexRequest_Filter,
+  TransactionPlannerRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { TimestampByHeightRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { penumbra } from '../lib/penumbra';
+
+import { ValidatorInfoRequest } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+
+// Error detection functions (from legacy minifront)
+const userDeniedTransaction = (e: unknown): boolean =>
+  e instanceof Error && e.message.startsWith('[permission_denied]');
+
+const unauthenticated = (e: unknown): boolean =>
+  e instanceof Error && e.message.includes('unauthenticated');
 
 export class PenumbraService {
   /**
@@ -84,11 +97,105 @@ export class PenumbraService {
   }
 
   /**
+   * Get delegations by address index
+   * @param account - Account number to get delegations for
+   * @param filter - Filter for delegation types (default: ALL to show all validators)
+   * @returns Async iterable of delegation responses
+   */
+  getDelegationsByAddressIndex(
+    account: number,
+    filter: DelegationsByAddressIndexRequest_Filter = DelegationsByAddressIndexRequest_Filter.ALL,
+  ) {
+    const request = new DelegationsByAddressIndexRequest({
+      addressIndex: new AddressIndex({ account }),
+      filter,
+    });
+    return penumbra.service(ViewService).delegationsByAddressIndex(request);
+  }
+
+  /**
+   * Get validator info stream
+   * @param showInactive - Whether to include inactive validators
+   * @returns Async iterable of validator info responses
+   */
+  getValidatorInfoStream(showInactive: boolean = true) {
+    const request = new ValidatorInfoRequest({ showInactive });
+    return penumbra.service(StakeService).validatorInfo(request);
+  }
+
+  /**
+   * Plan, build, and broadcast a transaction
+   * @param request - Transaction planner request
+   * @returns Promise that resolves when transaction is broadcast, or undefined if user cancelled
+   */
+  async planBuildBroadcast(request: TransactionPlannerRequest): Promise<any> {
+    try {
+      // Plan the transaction
+      const planResponse = await penumbra.service(ViewService).transactionPlanner(request);
+      if (!planResponse.plan) {
+        throw new Error('Failed to create transaction plan');
+      }
+
+      // Build the transaction with user authorization, handling the stream properly
+      const buildStream = penumbra.service(ViewService).authorizeAndBuild({
+        transactionPlan: planResponse.plan,
+      });
+
+      let transaction;
+      for await (const { status } of buildStream) {
+        if (status.case === 'complete' && status.value.transaction) {
+          transaction = status.value.transaction;
+          break;
+        }
+        // Handle other status cases if needed (e.g., progress, error)
+      }
+
+      if (!transaction) {
+        throw new Error('Failed to build transaction');
+      }
+
+      // Broadcast the transaction, handling the stream properly
+      const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
+        transaction,
+        awaitDetection: true,
+      });
+
+      for await (const { status } of broadcastStream) {
+        if (status.case === 'confirmed') {
+          break;
+        }
+        // Handle other status cases if needed
+      }
+
+      return { success: true };
+    } catch (e) {
+      if (userDeniedTransaction(e)) {
+        // User cancelled - return undefined instead of throwing
+        console.log('User cancelled transaction');
+        return undefined;
+      } else if (unauthenticated(e)) {
+        throw new Error('Authentication required. Please check your wallet connection.');
+      } else {
+        // Re-throw actual errors
+        throw e;
+      }
+    }
+  }
+
+  /**
    * Get the underlying view service client for advanced usage
    * @returns The view service client
    */
   getViewClient() {
     return penumbra.service(ViewService);
+  }
+
+  /**
+   * Get the underlying stake service client for advanced usage
+   * @returns The stake service client
+   */
+  getStakeClient() {
+    return penumbra.service(StakeService);
   }
 
   /**

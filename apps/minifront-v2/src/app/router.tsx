@@ -4,6 +4,7 @@ import { Portfolio } from '@/pages/portfolio';
 import { AllTransactionsPage } from '@/pages/portfolio/ui/transactions/all-transactions-page';
 import { Transfer } from '@/pages/transfer';
 import { Shielding } from '@/pages/shielding';
+import { Stake } from '@/pages/stake';
 import { NotFoundPage } from '@/pages/not-found';
 import { Layout } from './layout';
 import { abortLoader } from '@/shared/lib/abort-loader';
@@ -32,6 +33,10 @@ const routes: RouteObject[] = [
       {
         path: PagePath.Shielding,
         element: <Shielding />,
+      },
+      {
+        path: PagePath.Stake,
+        element: <Stake />,
       },
       {
         path: '*',

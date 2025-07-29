@@ -14,6 +14,7 @@ import { AppParametersStore } from './app-parameters-store';
 import { TransferStore } from './transfer-store';
 import { DepositStore } from './deposit-store';
 import { WithdrawStore } from './withdraw-store';
+import { StakingStore } from './staking-store';
 import { PenumbraService } from '../services/penumbra-service';
 
 export class RootStore {
@@ -28,6 +29,7 @@ export class RootStore {
   transferStore: TransferStore;
   depositStore: DepositStore;
   withdrawStore: WithdrawStore;
+  stakingStore: StakingStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -43,6 +45,7 @@ export class RootStore {
     this.transferStore = new TransferStore(this);
     this.depositStore = new DepositStore(this);
     this.withdrawStore = new WithdrawStore(this);
+    this.stakingStore = new StakingStore(this);
   }
 
   /**
@@ -58,6 +61,7 @@ export class RootStore {
         this.transferStore.initialize(),
         this.depositStore.initialize(),
         this.withdrawStore.initialize(),
+        this.stakingStore.initialize(),
       ]);
     } catch (error) {
       console.error('Failed to initialize stores:', error);
@@ -75,6 +79,7 @@ export class RootStore {
     this.transferStore.dispose();
     this.depositStore.dispose();
     this.withdrawStore.dispose();
+    this.stakingStore.dispose();
   }
 }
 
@@ -90,4 +95,5 @@ export const {
   transferStore,
   depositStore,
   withdrawStore,
+  stakingStore,
 } = rootStore;

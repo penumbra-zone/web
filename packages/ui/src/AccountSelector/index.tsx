@@ -105,7 +105,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density={density}
+            density='compact'
           >
             Previous Account
           </Button>
@@ -117,7 +117,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density={density}
+            density='compact'
           >
             Next Account
           </Button>

@@ -1,6 +1,7 @@
 import { ReactNode, ElementType } from 'react';
 import cn from 'clsx';
 import { large } from '../utils/typography';
+import { Text } from '../Text';
 
 export interface CardProps {
   children?: ReactNode;
@@ -23,6 +24,12 @@ export interface CardProps {
    * This will be positioned on the right side of the title
    */
   endContent?: ReactNode;
+}
+
+export interface CardSectionProps {
+  children?: ReactNode;
+  variant?: 'default' | 'transparent';
+  title?: string;
 }
 
 /**
@@ -79,7 +86,7 @@ export const Card = ({
         </div>
       )}
 
-      <div className='flex flex-col gap-4 rounded-xl bg-card-gradient p-3 backdrop-blur-lg'>
+      <div className='flex flex-col gap-1 rounded-xl bg-card-gradient p-3 backdrop-blur-lg'>
         {children}
       </div>
     </Wrapper>
@@ -91,7 +98,14 @@ const Stack = ({ children }: { children?: ReactNode }) => {
 };
 Card.Stack = Stack;
 
-const Section = ({ children }: { children?: ReactNode }) => (
-  <div className='bg-other-tonal-fill5 p-3'>{children}</div>
+const Section = ({ children, variant = 'default', title }: CardSectionProps) => (
+  <div className={variant === 'transparent' ? '' : 'bg-other-tonal-fill5 p-3'}>
+    {title && (
+      <Text color='text.secondary' xs>
+        {title}
+      </Text>
+    )}
+    {children}
+  </div>
 );
 Card.Section = Section;

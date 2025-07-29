@@ -109,3 +109,28 @@ export const WithEndContent: Story = {
     );
   },
 };
+
+export const TransparentSection: Story = {
+  args: {
+    as: 'section',
+    title: 'Card with Transparent Section',
+  },
+  render: function Render({ as, title }) {
+    return (
+      <Card as={as} title={title}>
+        <Card.Stack>
+          <Card.Section variant='transparent' title='Transparent Section'>
+            <Text>
+              This section uses the <Text technical>transparent</Text> variant, so it inherits the
+              card background and has no internal padding.
+            </Text>
+          </Card.Section>
+
+          <Card.Section title='Default Section'>
+            <Text>This section uses the default variant for comparison purposes.</Text>
+          </Card.Section>
+        </Card.Stack>
+      </Card>
+    );
+  },
+};

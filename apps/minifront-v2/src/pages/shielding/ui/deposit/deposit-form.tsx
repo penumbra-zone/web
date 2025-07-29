@@ -441,16 +441,14 @@ const DepositFormInternal = observer(() => {
           {/* Destination Account */}
           <div className={lastSectionClasses}>
             <Text color={sectionTitleColor}>Destination</Text>
-            <Density compact>
-              <AccountSelector
-                value={depositState.destinationAccount}
-                onChange={handleAccountChange}
-                canGoPrevious={depositState.destinationAccount > 0}
-                canGoNext={true}
-                getDisplayValue={getAccountDisplayName}
-                disabled={isFormDisabled}
-              />
-            </Density>
+            <AccountSelector
+              value={depositState.destinationAccount}
+              onChange={handleAccountChange}
+              canGoPrevious={depositState.destinationAccount > 0}
+              canGoNext={true}
+              getDisplayValue={getAccountDisplayName}
+              disabled={isFormDisabled}
+            />
           </div>
 
           {/* Error Display */}
