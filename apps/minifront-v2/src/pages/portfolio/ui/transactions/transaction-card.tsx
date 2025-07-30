@@ -213,7 +213,8 @@ export const TransactionCard = observer(
                   <div className='text-muted-foreground flex min-h-[120px] flex-col items-center justify-center p-6 text-center'>
                     <p className='text-sm'>You have no transactions yet.</p>
                     <p className='mt-1 text-xs'>
-                      Send, receive, or trade assets to see your transaction history here or try refreshing the page in case they are not showing up.
+                      Send, receive, or trade assets to see your transaction history here or try
+                      refreshing the page in case they are not showing up.
                     </p>
                   </div>
                 )}

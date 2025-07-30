@@ -1,8 +1,10 @@
 import { observer } from 'mobx-react-lite';
+import { useState, useEffect } from 'react';
 import { Widget } from '@skip-go/widget';
 import { ArrowRightLeft } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { useIsConnected, useConnectWallet } from '@/shared/hooks/use-connection';
 
 // Skip widget configuration based on legacy minifront
@@ -56,6 +58,20 @@ const theme = {
 export const SkipDepositTab = observer(() => {
   const isConnected = useIsConnected();
   const { connectWallet } = useConnectWallet();
+  const [isWidgetLoading, setIsWidgetLoading] = useState(true);
+
+  // Show loading for initial widget load
+  useEffect(() => {
+    if (isConnected) {
+      setIsWidgetLoading(true);
+      // Set a minimum loading time for better UX
+      const timer = setTimeout(() => {
+        setIsWidgetLoading(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isConnected]);
 
   // If wallet is not connected, show connect wallet message
   if (!isConnected) {
@@ -72,6 +88,17 @@ export const SkipDepositTab = observer(() => {
             Connect wallet
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // Show skeleton while widget is loading
+  if (isWidgetLoading) {
+    return (
+      <div className='w-full py-6 flex flex-col gap-1'>
+        <div className='h-[110px] w-full rounded-2xl bg-other-tonal-fill5 relative overflow-hidden before:absolute before:top-1/2 before:left-1/2 before:h-full before:w-full before:content-[""] before:-translate-x-1/2 before:-translate-y-1/2 before:animate-shimmer before:bg-linear-to-r before:from-transparent before:via-other-tonal-fill5 before:to-transparent' />
+        <div className='h-[110px] w-full rounded-2xl bg-other-tonal-fill5 relative overflow-hidden before:absolute before:top-1/2 before:left-1/2 before:h-full before:w-full before:content-[""] before:-translate-x-1/2 before:-translate-y-1/2 before:animate-shimmer before:bg-linear-to-r before:from-transparent before:via-other-tonal-fill5 before:to-transparent' />
+        <div className='h-[70px] w-full rounded-2xl bg-other-tonal-fill5 relative overflow-hidden before:absolute before:top-1/2 before:left-1/2 before:h-full before:w-full before:content-[""] before:-translate-x-1/2 before:-translate-y-1/2 before:animate-shimmer before:bg-linear-to-r before:from-transparent before:via-other-tonal-fill5 before:to-transparent' />
       </div>
     );
   }
