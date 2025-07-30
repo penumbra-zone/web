@@ -1,20 +1,16 @@
 import { observer } from 'mobx-react-lite';
-import { useAppParametersStore } from '@/shared/stores/store-context';
+import { useStatusStore } from '@/shared/stores/store-context';
 
 export const SyncBar = observer(() => {
-  const appParametersStore = useAppParametersStore();
-  // @ts-expect-error status property access
-  const status = appParametersStore.status as
-    | { syncHeight?: number; latestKnownBlockHeight?: number }
-    | undefined;
+  const statusStore = useStatusStore();
+  const syncStatus = statusStore.syncStatus;
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- status can be undefined despite type assertion
-  if (!status?.syncHeight || !status?.latestKnownBlockHeight) {
+  if (!syncStatus?.syncHeight || !syncStatus?.latestKnownBlockHeight) {
     return null;
   }
 
-  const progress = (status.syncHeight / status.latestKnownBlockHeight) * 100;
-  const isSynced = progress >= 100;
+  const progress = statusStore.syncProgress;
+  const isSynced = statusStore.isSynced;
 
   if (isSynced) {
     return null;

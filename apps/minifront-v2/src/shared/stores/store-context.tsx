@@ -71,6 +71,11 @@ export const useStakingStore = () => {
   return rootStore.stakingStore;
 };
 
+export const useStatusStore = () => {
+  const rootStore = useRootStore();
+  return rootStore.statusStore;
+};
+
 // Hook for the Penumbra service
 export const usePenumbraService = () => {
   const rootStore = useRootStore();

@@ -6,30 +6,35 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pill } from '@penumbra-zone/ui/Pill';
 import { Text } from '@penumbra-zone/ui/Text';
-import { useAppParametersStore } from '@/shared/stores/store-context';
+import { useStatusStore } from '@/shared/stores/store-context';
 
 export const StatusPopover = observer(() => {
-  const appParametersStore = useAppParametersStore();
-  // @ts-expect-error status property access
-  const status = appParametersStore.status as
-    | { syncHeight?: number; latestKnownBlockHeight?: number }
-    | undefined;
+  const statusStore = useStatusStore();
 
   const pill = useMemo(() => {
-    if (!status) {
+    // Show error state if there's an error
+    if (statusStore.hasConnectionError) {
+      return <Pill context='technical-destructive'>Block Sync Error</Pill>;
+    }
+
+    // Show loading state if still loading and no sync status
+    if (statusStore.loading && !statusStore.syncStatus) {
       return <Pill context='technical-caution'>Loading...</Pill>;
     }
 
-    if (
-      status.syncHeight &&
-      status.latestKnownBlockHeight &&
-      status.syncHeight >= status.latestKnownBlockHeight
-    ) {
+    // Show synced state if fully synced
+    if (statusStore.isSynced) {
       return <Pill context='technical-success'>Blocks Synced</Pill>;
     }
 
+    // Show syncing state
     return <Pill context='technical-caution'>Block Syncing</Pill>;
-  }, [status]);
+  }, [
+    statusStore.hasConnectionError,
+    statusStore.loading,
+    statusStore.syncStatus,
+    statusStore.isSynced,
+  ]);
 
   return (
     <Popover>
@@ -45,14 +50,21 @@ export const StatusPopover = observer(() => {
               <Text technical>Status</Text>
               {pill}
             </div>
-            {status && (
+            {statusStore.syncStatus && (
               <div className='flex flex-col gap-2'>
                 <Text technical>Block Height</Text>
                 <Pill context='technical-default'>
-                  {status.latestKnownBlockHeight !== status.syncHeight
-                    ? `${status.syncHeight}${status.latestKnownBlockHeight ? ` of ${status.latestKnownBlockHeight}` : ''}`
-                    : `${status.latestKnownBlockHeight}`}
+                  {statusStore.syncStatus.latestKnownBlockHeight !==
+                  statusStore.syncStatus.syncHeight
+                    ? `${statusStore.syncStatus.syncHeight.toLocaleString()}${statusStore.syncStatus.latestKnownBlockHeight ? ` of ${statusStore.syncStatus.latestKnownBlockHeight.toLocaleString()}` : ''}`
+                    : `${statusStore.syncStatus.latestKnownBlockHeight.toLocaleString()}`}
                 </Pill>
+              </div>
+            )}
+            {statusStore.hasConnectionError && statusStore.currentError && (
+              <div className='flex flex-col gap-2'>
+                <Text technical>Error</Text>
+                <Pill context='technical-destructive'>{statusStore.currentError.message}</Pill>
               </div>
             )}
           </div>

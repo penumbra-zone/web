@@ -17,6 +17,8 @@ import {
   DelegationsByAddressIndexRequest,
   DelegationsByAddressIndexRequest_Filter,
   TransactionPlannerRequest,
+  StatusRequest,
+  StatusStreamRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { TimestampByHeightRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -25,10 +27,11 @@ import { penumbra } from '../lib/penumbra';
 import { ValidatorInfoRequest } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 // Error detection functions (from legacy minifront)
-const userDeniedTransaction = (e: unknown): boolean =>
+// These are used in the transaction service
+export const userDeniedTransaction = (e: unknown): boolean =>
   e instanceof Error && e.message.startsWith('[permission_denied]');
 
-const unauthenticated = (e: unknown): boolean =>
+export const unauthenticated = (e: unknown): boolean =>
   e instanceof Error && e.message.includes('unauthenticated');
 
 export class PenumbraService {
@@ -94,6 +97,24 @@ export class PenumbraService {
   async getGasPrices() {
     const request = new GasPricesRequest({});
     return penumbra.service(ViewService).gasPrices(request);
+  }
+
+  /**
+   * Get initial status with sync information
+   * @returns Promise of status response
+   */
+  async getStatus() {
+    const request = new StatusRequest({});
+    return penumbra.service(ViewService).status(request);
+  }
+
+  /**
+   * Get a stream of status updates with sync information
+   * @returns Async iterable of status stream responses
+   */
+  getStatusStream() {
+    const request = new StatusStreamRequest({});
+    return penumbra.service(ViewService).statusStream(request);
   }
 
   /**
