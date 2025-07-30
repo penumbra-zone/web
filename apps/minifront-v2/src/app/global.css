@@ -28,3 +28,28 @@ body > section[aria-live='polite'] {
   background-repeat: no-repeat !important;
   background-attachment: fixed !important;
 }
+
+/* Global scrollbar styling - matching veil app */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  backdrop-filter: blur(16px);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #fafafa1a;
+  border-left: 2px solid transparent;
+  border-right: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
