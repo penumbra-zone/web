@@ -29,7 +29,6 @@ export const ShieldingTransactionCard = observer(() => {
       title='Your Recent Shielding Activity'
       showInfoButton={false}
       showSeeAllLink={false}
-      maxItems={5}
       headerAction={headerAction}
       filteredTransactions={filteredTransactions}
     />
