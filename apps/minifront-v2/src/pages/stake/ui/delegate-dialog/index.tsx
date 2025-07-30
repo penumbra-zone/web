@@ -161,7 +161,7 @@ export const DelegateDialog = observer(() => {
               </Text>
             </div>
           )}
-          {/* Error Message */}
+          {/* Error Message - only show validation errors, transaction errors are handled by toasts */}
           {stakingStore.error && (
             <div className='flex items-center gap-3 rounded-sm bg-destructive-light p-3'>
               <CircleX size={22} className='text-destructive-dark' />

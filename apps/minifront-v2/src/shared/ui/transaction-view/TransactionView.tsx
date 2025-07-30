@@ -142,7 +142,11 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
     );
   }
   if (error || !fullTxInfoFromMinifront?.view) {
-    return <div className='p-6 text-red-500'>Transaction not found or error loading.</div>;
+    return (
+      <div className='flex h-26 items-center justify-center p-6 text-caution-light'>
+        Transaction not found or error loading.
+      </div>
+    );
   }
 
   const handleClose = () => {

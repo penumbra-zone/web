@@ -176,15 +176,6 @@ export const SendForm = observer(() => {
           </div>
         </div>
 
-        {/* Error message */}
-        {sendState.error && (
-          <div className='bg-destructive/10 border-destructive/20 rounded-lg border p-3'>
-            <Text color='destructive.light' small>
-              {sendState.error}
-            </Text>
-          </div>
-        )}
-
         {/* Submit Button */}
         <div className='mt-2 rounded-sm'>
           <Button

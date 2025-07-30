@@ -451,15 +451,6 @@ const DepositFormInternal = observer(() => {
             />
           </div>
 
-          {/* Error Display */}
-          {depositState.error && (
-            <div className='rounded-lg p-3'>
-              <Text color='destructive.light' small>
-                Failed: {depositState.error}
-              </Text>
-            </div>
-          )}
-
           {/* Submit Button */}
           <div className='mt-2'>
             <Density sparse>
