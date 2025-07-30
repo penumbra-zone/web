@@ -124,62 +124,17 @@ export class PenumbraService {
   }
 
   /**
-   * Plan, build, and broadcast a transaction
+   * Plan, build, and broadcast a transaction with toast notifications
    * @param request - Transaction planner request
+   * @param classification - Transaction classification for toast labeling
    * @returns Promise that resolves when transaction is broadcast, or undefined if user cancelled
    */
-  async planBuildBroadcast(request: TransactionPlannerRequest): Promise<any> {
-    try {
-      // Plan the transaction
-      const planResponse = await penumbra.service(ViewService).transactionPlanner(request);
-      if (!planResponse.plan) {
-        throw new Error('Failed to create transaction plan');
-      }
-
-      // Build the transaction with user authorization, handling the stream properly
-      const buildStream = penumbra.service(ViewService).authorizeAndBuild({
-        transactionPlan: planResponse.plan,
-      });
-
-      let transaction;
-      for await (const { status } of buildStream) {
-        if (status.case === 'complete' && status.value.transaction) {
-          transaction = status.value.transaction;
-          break;
-        }
-        // Handle other status cases if needed (e.g., progress, error)
-      }
-
-      if (!transaction) {
-        throw new Error('Failed to build transaction');
-      }
-
-      // Broadcast the transaction, handling the stream properly
-      const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
-        transaction,
-        awaitDetection: true,
-      });
-
-      for await (const { status } of broadcastStream) {
-        if (status.case === 'confirmed') {
-          break;
-        }
-        // Handle other status cases if needed
-      }
-
-      return { success: true };
-    } catch (e) {
-      if (userDeniedTransaction(e)) {
-        // User cancelled - return undefined instead of throwing
-        console.log('User cancelled transaction');
-        return undefined;
-      } else if (unauthenticated(e)) {
-        throw new Error('Authentication required. Please check your wallet connection.');
-      } else {
-        // Re-throw actual errors
-        throw e;
-      }
-    }
+  async planBuildBroadcast(
+    request: TransactionPlannerRequest,
+    classification: 'delegate' | 'undelegate' | 'undelegateClaim' = 'delegate',
+  ): Promise<any> {
+    const { planBuildBroadcast } = await import('./transaction');
+    return planBuildBroadcast(classification, request);
   }
 
   /**

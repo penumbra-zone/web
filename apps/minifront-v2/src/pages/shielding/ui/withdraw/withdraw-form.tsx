@@ -302,6 +302,7 @@ const WithdrawFormInternal: React.FC = observer(() => {
           )}
         </div>
 
+        {/* Error message - only show validation errors, transaction errors are handled by toasts */}
         {withdrawState.error && (
           <div className='rounded-lg p-3'>
             <Text color='destructive.light' small>

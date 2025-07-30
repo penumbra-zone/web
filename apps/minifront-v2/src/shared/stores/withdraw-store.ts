@@ -448,35 +448,10 @@ export class WithdrawStore {
 
     try {
       const request = await this.buildTransactionRequest();
-      const { plan } = await penumbra.service(ViewService).transactionPlanner(request);
-      if (!plan) {
-        throw new Error('No plan in planner response');
-      }
-      const buildStream = penumbra.service(ViewService).authorizeAndBuild({
-        transactionPlan: plan,
-      });
 
-      let transaction;
-      for await (const { status } of buildStream) {
-        if (status.case === 'complete' && status.value.transaction) {
-          transaction = status.value.transaction;
-          break;
-        }
-      }
-
-      if (!transaction) {
-        throw new Error('Failed to build transaction');
-      }
-      const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
-        transaction,
-        awaitDetection: true,
-      });
-
-      for await (const { status } of broadcastStream) {
-        if (status.case === 'confirmed') {
-          break;
-        }
-      }
+      // Use the toast-enabled transaction helper
+      const { planBuildBroadcast } = await import('../services/transaction');
+      await planBuildBroadcast('ics20Withdrawal', request);
 
       runInAction(() => {
         this.withdrawState = {
@@ -504,10 +479,20 @@ export class WithdrawStore {
           amount: this.withdrawState.amount,
         },
       });
+
+      // Only set error state if it's not a user denial (toast handles those)
+      const { userDeniedTransaction } = await import('../services/transaction');
+      if (!userDeniedTransaction(error)) {
+        runInAction(() => {
+          this.withdrawState = {
+            ...this.withdrawState,
+            error: error instanceof Error ? error.message : 'Withdrawal failed',
+          };
+        });
+      }
       runInAction(() => {
         this.withdrawState = {
           ...this.withdrawState,
-          error: error instanceof Error ? error.message : 'Withdrawal failed',
           isLoading: false,
         };
       });
