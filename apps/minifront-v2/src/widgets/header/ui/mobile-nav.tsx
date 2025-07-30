@@ -8,7 +8,6 @@ import { HEADER_LINKS } from './links';
 // Context for sharing state between components
 interface MobileNavContextType {
   isOpen: boolean;
-  isAnimating: boolean;
   setIsOpen: (open: boolean) => void;
 }
 
@@ -23,42 +22,22 @@ const useMobileNavContext = () => {
 };
 
 interface MobileNavProps {
-  children: ({ isOpen, isAnimating }: { isOpen: boolean; isAnimating: boolean }) => ReactNode;
+  children: ({ isOpen }: { isOpen: boolean }) => ReactNode;
 }
 
 export const MobileNav = ({ children }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Handle opening/closing with proper animation timing
-  const handleSetIsOpen = (open: boolean) => {
-    if (open) {
-      setIsOpen(true);
-      setIsAnimating(false); // Start with content hidden
-      // Small delay to allow background to appear first, then slide content in
-      setTimeout(() => {
-        setIsAnimating(true);
-      }, 50); // Small delay for smooth slide-in
-    } else {
-      setIsAnimating(false);
-      // Delay hiding the background until animation completes
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 300); // Match the content animation duration
-    }
-  };
-
-  // Close mobile nav when clicking outside or pressing escape
+  // Close mobile nav when pressing escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        handleSetIsOpen(false);
+        setIsOpen(false);
       }
     };
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Prevent body scroll when menu is open
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -71,10 +50,8 @@ export const MobileNav = ({ children }: MobileNavProps) => {
   }, [isOpen]);
 
   return (
-    <MobileNavContext.Provider
-      value={{ isOpen: isAnimating, isAnimating, setIsOpen: handleSetIsOpen }}
-    >
-      {children({ isOpen, isAnimating })}
+    <MobileNavContext.Provider value={{ isOpen, setIsOpen }}>
+      {children({ isOpen })}
     </MobileNavContext.Provider>
   );
 };
@@ -100,7 +77,7 @@ const ToggleButton = () => {
 
 // Navigation Content Component
 const Content = () => {
-  const { setIsOpen, isAnimating } = useMobileNavContext();
+  const { setIsOpen } = useMobileNavContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -121,17 +98,14 @@ const Content = () => {
 
   const currentPath = getCurrentValue();
 
+  // All links animate on hover, no conditional animation
   return (
-    <div
-      className={`space-y-6 transition-all duration-300 ease-out ${
-        isAnimating ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
-      }`}
-    >
+    <div className='space-y-6 transition-all duration-300 ease-out'>
       {/* Navigation links section */}
       <div>
         <nav>
           <div className='flex flex-col space-y-2'>
-            {HEADER_LINKS.map((link, index) => {
+            {HEADER_LINKS.map(link => {
               const Icon = link.icon;
               const isActive = currentPath === link.value;
 
@@ -139,13 +113,10 @@ const Content = () => {
                 <button
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
-                  className={`flex transform items-center gap-3 rounded-lg py-4 text-left transition-all duration-200 hover:scale-[1.02]  cursor-pointer ${
-                    isActive ? 'text-primary-light' : 'hover:text-text-primary'
-                  }`}
-                  style={{
-                    animationDelay: isAnimating ? `${index * 50}ms` : '0ms',
-                    transitionDelay: isAnimating ? `${index * 30}ms` : '0ms',
-                  }}
+                  className={`flex transform items-center gap-3 rounded-lg py-4 text-left transition-all duration-200 cursor-pointer user-select-none
+                    ${isActive ? 'text-primary-light' : 'hover:text-text-primary'}
+                    hover:translate-x-2
+                  `}
                 >
                   <Icon size={20} className='text-primary-light' />
                   <span className='font-medium'>{link.label}</span>

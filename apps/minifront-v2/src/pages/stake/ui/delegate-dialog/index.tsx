@@ -3,7 +3,7 @@ import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
-import { Info, CircleX } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useStakingStore, useBalancesStore } from '@/shared/stores/store-context';
 import { ValidatorRow } from '../validator-row';
 import { AssetValueInput } from '@penumbra-zone/ui/AssetValueInput';
@@ -158,15 +158,6 @@ export const DelegateDialog = observer(() => {
               <Text small color='caution.dark'>
                 The validator you're delegating to has more than 5% of the current voting power. To
                 promote decentralization, it's recommended to choose a smaller validator.
-              </Text>
-            </div>
-          )}
-          {/* Error Message - only show validation errors, transaction errors are handled by toasts */}
-          {stakingStore.error && (
-            <div className='flex items-center gap-3 rounded-sm bg-destructive-light p-3'>
-              <CircleX size={22} className='text-destructive-dark' />
-              <Text small color='destructive.dark'>
-                {stakingStore.error}
               </Text>
             </div>
           )}
