@@ -1,22 +1,22 @@
-<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1600" height="1080" viewBox="0 0 1600 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_1_11596)">
-<rect width="1200" height="900" fill="#705279"/>
+<rect width="1600" height="1080" fill="#705279"/>
 <g filter="url(#filter0_f_1_11596)">
-<circle cx="600" cy="-100" r="1000" fill="url(#paint0_linear_1_11596)"/>
+<circle cx="800" cy="-100" r="1000" fill="url(#paint0_linear_1_11596)"/>
 </g>
 </g>
 <defs>
-<filter id="filter0_f_1_11596" x="-800" y="-1500" width="2800" height="2800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter0_f_1_11596" x="-600" y="-1500" width="2800" height="2800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feGaussianBlur stdDeviation="200" result="effect1_foregroundBlur_1_11596"/>
 </filter>
-<linearGradient id="paint0_linear_1_11596" x1="600" y1="-1100" x2="600" y2="900" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint0_linear_1_11596" x1="800" y1="-1100" x2="800" y2="1080" gradientUnits="userSpaceOnUse">
 <stop stop-opacity="0.9"/>
 <stop offset="1" stop-opacity="0.8"/>
 </linearGradient>
 <clipPath id="clip0_1_11596">
-<rect width="1200" height="900" fill="white"/>
+<rect width="1600" height="1080" fill="white"/>
 </clipPath>
 </defs>
 </svg>

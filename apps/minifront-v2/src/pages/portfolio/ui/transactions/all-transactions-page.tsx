@@ -1,10 +1,6 @@
-import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
-import { Metadata, AssetId, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Card } from '@penumbra-zone/ui/Card';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -17,19 +13,7 @@ import { BreadCrumb, BreadcrumbItem } from '@/shared/ui/breadcrumb';
 import { InfoDialog } from '../assets/info-dialog';
 import { TransactionView } from './transaction-view';
 import { TransactionCard } from './transaction-card';
-
-// Utility function to compare Uint8Arrays
-const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-  return true;
-};
+import { createGetTxMetadata } from '@/shared/utils/get-tx-metadata';
 
 export const AllTransactionsPage = observer(() => {
   const balancesStore = useBalancesStore();
@@ -39,66 +23,8 @@ export const AllTransactionsPage = observer(() => {
   const isConnected = useIsConnected();
   const { connectWallet } = useConnectWallet();
 
-  // Extract wallet address views from balances responses (similar to TransactionCard)
-  const walletAddressViews = useMemo((): AddressView[] => {
-    const addressMap = new Map<string | number, AddressView>();
-
-    for (const response of balancesResponses) {
-      const accountAddress = response.accountAddress;
-      if (accountAddress) {
-        const key =
-          accountAddress.addressView.case === 'decoded' &&
-          accountAddress.addressView.value.index?.account !== undefined
-            ? accountAddress.addressView.value.index.account
-            : accountAddress.toJsonString();
-
-        addressMap.set(key, accountAddress);
-      }
-    }
-
-    // Convert map values to array
-    return Array.from(addressMap.values());
-  }, [balancesResponses]);
-
-  const getTxMetadata = (assetId?: AssetId | Denom): Metadata | undefined => {
-    if (!assetId) {
-      return undefined;
-    }
-    let rawMetadata: Metadata | undefined;
-
-    // Check for AssetId first
-    if (assetId instanceof AssetId) {
-      for (const res of balancesResponses) {
-        const meta = getMetadataFromBalancesResponse.optional(res);
-        if (
-          meta?.penumbraAssetId?.inner &&
-          compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
-        ) {
-          rawMetadata = meta;
-          break;
-        }
-      }
-    } else {
-      // Must be Denom or string
-      const denomToFind = typeof assetId === 'string' ? assetId : assetId.denom;
-      for (const res of balancesResponses) {
-        const meta = getMetadataFromBalancesResponse.optional(res);
-        if (meta) {
-          if (
-            meta.base === denomToFind ||
-            meta.display === denomToFind ||
-            meta.symbol === denomToFind
-          ) {
-            rawMetadata = meta;
-            break;
-          }
-        }
-      }
-    }
-
-    // Return raw metadata without enhancement
-    return rawMetadata;
-  };
+  // Create getTxMetadata function using centralized utility
+  const getTxMetadata = createGetTxMetadata(balancesResponses);
 
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Portfolio', path: PagePath.Portfolio },
@@ -164,7 +90,7 @@ export const AllTransactionsPage = observer(() => {
                 key={selectedTx}
                 txHash={selectedTx}
                 getTxMetadata={getTxMetadata}
-                walletAddressViews={walletAddressViews}
+                walletAddressViews={[]}
                 onDeselectTransaction={handleDeselectTransaction}
               />
             </div>

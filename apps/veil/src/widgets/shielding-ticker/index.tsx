@@ -16,6 +16,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import type { ShieldingDepositWithMeta } from '@/shared/api/server/shielding-deposits';
 import { getPortfolioPath, QueryParams } from '@/shared/const/pages';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 interface DepositItemProps {
   deposit: ShieldingDepositWithMeta;
@@ -133,6 +134,7 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
 };
 
 export const ShieldingTicker = () => {
+  const [parent] = useAutoAnimate();
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -157,7 +159,7 @@ export const ShieldingTicker = () => {
 
   if (isLoading || !hasDeposits) {
     return (
-      <div className='w-full border-b border-other-solid-stroke'>
+      <div className='w-full'>
         <div className='container mx-auto flex max-w-[1136px] items-center justify-between px-4 py-3'>
           <div className='flex items-center gap-2'>
             <div className='h-2 w-2 animate-pulse rounded-full bg-green-400'></div>
@@ -176,12 +178,14 @@ export const ShieldingTicker = () => {
             Dismiss
           </Button>
         </div>
+
+        <div className='relative h-18 w-full py-3' />
       </div>
     );
   }
 
   return (
-    <div className='w-full border-b border-other-solid-stroke'>
+    <div className='w-full'>
       {/* Title and hide button row - constrained to container width */}
       <div className='container mx-auto flex max-w-[1136px] items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-2'>
@@ -203,7 +207,7 @@ export const ShieldingTicker = () => {
       </div>
 
       {/* Full-width marquee area */}
-      <div className='relative w-full py-3'>
+      <div ref={parent} className='relative h-18 w-full py-3'>
         <Marquee pauseOnHover={true} speed={30} gradient={false} autoFill={true}>
           {deposits.map(deposit => (
             <DepositItem key={deposit.id} deposit={deposit} />

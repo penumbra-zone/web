@@ -53,6 +53,16 @@ export class BalancesStore {
       return;
     }
 
+    // Clear any account filter to ensure we load all accounts
+    this.accountFilter = undefined;
+    await this.loadBalances();
+  }
+
+  /**
+   * Load balances for all accounts (clears any account filter)
+   */
+  async loadAllAccountBalances() {
+    this.accountFilter = undefined;
     await this.loadBalances();
   }
 

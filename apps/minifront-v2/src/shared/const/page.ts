@@ -3,4 +3,5 @@ export enum PagePath {
   Portfolio = '/portfolio',
   Transactions = '/portfolio/transactions',
   Transfer = '/transfer',
+  Shielding = '/shielding',
 }

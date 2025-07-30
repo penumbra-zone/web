@@ -55,9 +55,11 @@ export const AssetSelectorTrigger = ({
         ) : (
           <div className={cn('flex items-center', density === 'sparse' ? 'gap-2' : 'gap-1')}>
             <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
-            <Text color={disabled ? 'text.muted' : 'text.primary'}>
-              {metadata?.symbol ?? 'Unknown'}
-            </Text>
+            <span className='inline-block max-w-[120px] truncate'>
+              <Text color={disabled ? 'text.muted' : 'text.primary'}>
+                {metadata?.symbol ?? 'Unknown'}
+              </Text>
+            </span>
           </div>
         )}
 

@@ -60,9 +60,11 @@ export const RadioItem = ({
 
     if (typeof description === 'string') {
       return (
-        <Text detail color='text.secondary' as='div'>
-          {description}
-        </Text>
+        <div className='flex w-full truncate'>
+          <Text detail color='text.secondary' as='div'>
+            {description}
+          </Text>
+        </div>
       );
     }
 
@@ -85,9 +87,9 @@ export const RadioItem = ({
           getAriaCheckedOutlineColorByActionType(actionType),
         )}
       >
-        <div className='flex items-center gap-2'>
+        <div className='flex w-full items-center gap-2'>
           {startAdornment}
-          <div>
+          <div className='flex w-[90%] flex-col'>
             <div className='flex items-center gap-1 whitespace-nowrap'>{title}</div>
             {descriptionText}
           </div>

@@ -6,15 +6,17 @@ import { XCircle } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
-import { AssetsTable } from './ui/assets-table';
+import { AssetsTable, AssetsTableLayout } from './ui/assets-table';
 import { WalletConnect } from './ui/wallet-connect';
 import { useRegistry } from '@/shared/api/registry.tsx';
 import { IbcChainProvider } from '@/features/cosmos/chain-provider.tsx';
 import { PortfolioPositionTabs } from './ui/position-tabs';
 import { AssetBars } from './ui/asset-bars';
-import { useUnifiedAssets } from '@/pages/portfolio/api/use-unified-assets';
+import { useUnifiedAssets } from './api/use-unified-assets';
 import { PenumbraWaves } from '@/pages/explore/ui/waves.tsx';
 import { ShieldingTicker } from '@/widgets/shielding-ticker';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { PortfolioCard } from './ui/portfolio-card';
 
 interface PortfolioPageProps {
   isMobile: boolean;
@@ -71,21 +73,33 @@ function MobilePortfolioPage() {
 }
 
 const DesktopPortfolioPage = observer(() => {
-  const { isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
+  const [parent] = useAutoAnimate();
+  const { isPenumbraConnected, isCosmosConnected, isConnectionLoading } = useUnifiedAssets();
+
   return (
     <>
+      <PenumbraWaves />
+
       <ShieldingTicker />
-      <div className='container mx-auto flex max-w-[1136px] flex-col gap-4 py-8'>
-        <PenumbraWaves />
 
-        <WalletConnect />
+      {!isConnectionLoading && (
+        <div ref={parent} className='container mx-auto flex max-w-[1136px] flex-col gap-4 py-8'>
+          <WalletConnect />
 
-        {/* Asset Allocation Bars */}
-        {(isPenumbraConnected || isCosmosConnected) && <AssetBars />}
+          {/* Asset Allocation Bars */}
+          {(isPenumbraConnected || isCosmosConnected) && (
+            <PortfolioCard title={'Allocation'}>
+              <AssetBars />
+            </PortfolioCard>
+          )}
 
-        <AssetsTable />
-        <PortfolioPositionTabs />
-      </div>
+          <AssetsTableLayout>
+            <AssetsTable />
+          </AssetsTableLayout>
+
+          <PortfolioPositionTabs />
+        </div>
+      )}
     </>
   );
 });

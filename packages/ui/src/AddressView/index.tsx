@@ -61,11 +61,14 @@ export const AddressViewComponent = ({
   const lqtLabel = isLqt ? 'My Tournament Address for' : '';
   const accountLabel = `${randomizedLabel}${lqtLabel} ${indexLabel}`;
 
-  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
+  // Treat addresses whose `inner` component is missing or incorrect length as external
+  const autoExternal = address.inner.length !== 80;
+  const encodedAddress =
+    external || autoExternal ? address.altBech32m || 'External Address' : bech32mAddress(address);
 
   return (
     <div className={'flex items-center gap-2 text-text-primary'}>
-      {!hideIcon && !external && (
+      {!hideIcon && !(external || autoExternal) && (
         <div className='shrink'>
           <AddressIcon address={address} size={density === 'sparse' ? 24 : 16} />
         </div>
