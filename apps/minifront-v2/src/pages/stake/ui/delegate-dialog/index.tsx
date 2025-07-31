@@ -172,7 +172,7 @@ export const DelegateDialog = observer(() => {
           )}
 
           {/* Validator Info */}
-          <Card.Stack>
+          <div className='flex flex-col rounded-md overflow-hidden gap-1'>
             <Card.Section>
               <ValidatorRow validatorInfo={validator} compact />
               {/* Verification Notice */}
@@ -203,7 +203,7 @@ export const DelegateDialog = observer(() => {
                 disabled={stakingStore.loading}
               />
             </Card.Section>
-          </Card.Stack>
+          </div>
 
           {/* Buttons */}
           <div className='flex gap-2'>

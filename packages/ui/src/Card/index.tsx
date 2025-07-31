@@ -1,7 +1,6 @@
 import { ReactNode, ElementType } from 'react';
 import cn from 'clsx';
 import { large } from '../utils/typography';
-import { Text } from '../Text';
 
 export interface CardProps {
   children?: ReactNode;
@@ -28,8 +27,6 @@ export interface CardProps {
 
 export interface CardSectionProps {
   children?: ReactNode;
-  variant?: 'default' | 'transparent';
-  title?: string;
 }
 
 /**
@@ -94,18 +91,11 @@ export const Card = ({
 };
 
 const Stack = ({ children }: { children?: ReactNode }) => {
-  return <div className='flex flex-col gap-1 overflow-hidden rounded-sm'>{children}</div>;
+  return <div className='flex flex-col gap-4 overflow-hidden rounded-sm'>{children}</div>;
 };
 Card.Stack = Stack;
 
-const Section = ({ children, variant = 'default', title }: CardSectionProps) => (
-  <div className={variant === 'transparent' ? '' : 'bg-other-tonal-fill5 p-3'}>
-    {title && (
-      <Text color='text.secondary' xs>
-        {title}
-      </Text>
-    )}
-    {children}
-  </div>
+const Section = ({ children }: CardSectionProps) => (
+  <div className='bg-other-tonal-fill5 p-3'>{children}</div>
 );
 Card.Section = Section;

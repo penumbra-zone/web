@@ -71,31 +71,42 @@ export const DelegationTokensCard = observer(
     if (stakingStore.validatorsLoading) {
       return (
         <Card title={title} endContent={finalEndContent}>
-          <Card.Section variant='transparent' title='Your Delegations'>
-            <div className='flex flex-col gap-1'>
-              {Array.from({ length: 2 }, (_, index) => (
-                <ValidatorRowSkeleton key={index} />
-              ))}
+          <div className='flex flex-col gap-4'>
+            <div>
+              <Text xs color='text.secondary'>
+                Your Delegations
+              </Text>
+              <div className='flex flex-col gap-1 mt-2'>
+                {Array.from({ length: 2 }, (_, index) => (
+                  <ValidatorRowSkeleton key={index} />
+                ))}
+              </div>
             </div>
-          </Card.Section>
-          <Card.Section variant='transparent' title='Available to Delegate'>
-            <div className='flex flex-col gap-1'>
-              {Array.from({ length: 10 }, (_, index) => (
-                <ValidatorRowSkeleton key={index} />
-              ))}
+            <div>
+              <Text xs color='text.secondary'>
+                Available to Delegate
+              </Text>
+              <div className='flex flex-col gap-1 mt-2'>
+                {Array.from({ length: 10 }, (_, index) => (
+                  <ValidatorRowSkeleton key={index} />
+                ))}
+              </div>
             </div>
-          </Card.Section>
+          </div>
         </Card>
       );
     }
 
     return (
       <Card title={title} endContent={finalEndContent}>
-        <Card.Stack>
+        <div className='flex flex-col gap-4'>
           {/* Your Delegations Section - only show if there are delegations */}
           {delegations.length > 0 && (
-            <Card.Section variant='transparent' title='Your Delegations'>
-              <div className='flex flex-col gap-1'>
+            <div>
+              <Text xs color='text.secondary'>
+                Your Delegations
+              </Text>
+              <div className='flex flex-col gap-1 mt-2'>
                 {delegations.map((delegation, index) => {
                   const validatorInfo = findValidatorForDelegation(delegation);
 
@@ -110,13 +121,16 @@ export const DelegationTokensCard = observer(
                   );
                 })}
               </div>
-            </Card.Section>
+            </div>
           )}
 
           {/* Available to Delegate Section */}
-          <Card.Section variant='transparent' title='Available to Delegate'>
+          <div>
+            <Text xs color='text.secondary'>
+              Available to Delegate
+            </Text>
             {availableValidators.length > 0 ? (
-              <div className='flex flex-col gap-1'>
+              <div className='flex flex-col gap-1 mt-2'>
                 {availableValidators.map((validator, index) => (
                   <ValidatorRow key={`validator-${index}`} validatorInfo={validator} />
                 ))}
@@ -128,8 +142,8 @@ export const DelegationTokensCard = observer(
                 </Text>
               </div>
             )}
-          </Card.Section>
-        </Card.Stack>
+          </div>
+        </div>
       </Card>
     );
   },
