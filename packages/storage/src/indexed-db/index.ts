@@ -460,9 +460,10 @@ export class IndexedDb implements IndexedDbInterface {
       epoch.toString(),
     );
 
-    const filtered = subaccount
-      ? tournamentVotes.filter(vote => vote.subaccount === subaccount)
-      : tournamentVotes;
+    const filtered =
+      subaccount === undefined
+        ? tournamentVotes
+        : tournamentVotes.filter(vote => vote.subaccount === subaccount);
 
     return filtered.map(tournamentVote => ({
       incentivizedAsset: AssetId.fromJson(tournamentVote.incentivizedAsset, { typeRegistry }),
