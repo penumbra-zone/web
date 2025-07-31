@@ -87,9 +87,9 @@ export const RadioItem = ({
           getAriaCheckedOutlineColorByActionType(actionType),
         )}
       >
-        <div className='flex w-full items-center gap-2'>
+        <div className='flex items-center gap-2'>
           {startAdornment}
-          <div className='flex w-[90%] flex-col'>
+          <div>
             <div className='flex items-center gap-1 whitespace-nowrap'>{title}</div>
             {descriptionText}
           </div>
