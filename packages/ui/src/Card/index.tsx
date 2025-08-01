@@ -25,6 +25,10 @@ export interface CardProps {
   endContent?: ReactNode;
 }
 
+export interface CardSectionProps {
+  children?: ReactNode;
+}
+
 /**
  * `<Card />`s are rectangular sections of a page set off from the rest of the
  * page by a background and an optional title. They're useful for presenting
@@ -79,7 +83,7 @@ export const Card = ({
         </div>
       )}
 
-      <div className='flex flex-col gap-4 rounded-xl bg-card-gradient p-3 backdrop-blur-lg'>
+      <div className='flex flex-col gap-1 rounded-xl bg-card-gradient p-3 backdrop-blur-lg'>
         {children}
       </div>
     </Wrapper>
@@ -87,11 +91,11 @@ export const Card = ({
 };
 
 const Stack = ({ children }: { children?: ReactNode }) => {
-  return <div className='flex flex-col gap-1 overflow-hidden rounded-sm'>{children}</div>;
+  return <div className='flex flex-col gap-4 overflow-hidden rounded-sm'>{children}</div>;
 };
 Card.Stack = Stack;
 
-const Section = ({ children }: { children?: ReactNode }) => (
+const Section = ({ children }: CardSectionProps) => (
   <div className='bg-other-tonal-fill5 p-3'>{children}</div>
 );
 Card.Section = Section;

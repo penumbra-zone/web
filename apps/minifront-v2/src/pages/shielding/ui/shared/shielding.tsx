@@ -78,7 +78,11 @@ export const Shielding = () => {
                 />
               </div>
             </Density>
-            <div className='flex min-h-48 items-center justify-center'>
+            <div
+              className={`flex min-h-48 items-center justify-center ${
+                activeTab !== 'skip-deposit' ? ' pt-2' : ''
+              }`}
+            >
               {/* Tab Content */}
               {renderTabContent()}
             </div>

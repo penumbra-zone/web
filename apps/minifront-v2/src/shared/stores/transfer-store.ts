@@ -11,7 +11,6 @@ import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
-  getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
@@ -177,7 +176,7 @@ export class TransferStore {
       // If conversion fails (e.g., due to decimals that can't be converted to BigInt),
       // return false to avoid crashing the app. The AssetValueInput validation will
       // handle showing appropriate error messages to the user.
-      console.warn('TransferStore: Error converting amount for balance comparison:', error);
+      // log removed
       return false;
     }
   }
@@ -205,7 +204,6 @@ export class TransferStore {
     try {
       // Check if penumbra service is available
       if (!penumbra?.service) {
-        console.log('TransferStore: Penumbra service not available');
         this.resetFee();
         return;
       }
@@ -214,28 +212,17 @@ export class TransferStore {
 
       // Try to build a transaction request for fee estimation
       if (amount && recipient && selectedAsset && isAddress(recipient)) {
-        // Use real transaction data when all fields are complete
-        console.log('TransferStore: Using real transaction data for fee estimation');
         request = await this.buildTransactionRequest();
       } else {
-        // Try to estimate with available data or dummy data
-        console.log('TransferStore: Using dummy data for fee estimation');
         const estimationAsset = selectedAsset || this.getDummyAsset();
         const estimationAmount = amount || '1';
         const estimationRecipient =
           recipient && isAddress(recipient) ? recipient : await this.getDummyAddress();
 
         if (!estimationAsset || !estimationRecipient) {
-          console.log('TransferStore: No assets or addresses available for fee estimation');
           this.resetFee();
           return;
         }
-
-        console.log('TransferStore: Estimation params:', {
-          asset: getMetadata.optional(estimationAsset.balanceView)?.symbol || 'unknown',
-          amount: estimationAmount,
-          hasRecipient: !!estimationRecipient,
-        });
 
         request = await this.buildDummyTransactionRequest(
           estimationAsset,
@@ -245,17 +232,14 @@ export class TransferStore {
         );
       }
 
-      console.log('TransferStore: Planning transaction for fee estimation...');
       const { plan } = await penumbra.service(ViewService).transactionPlanner(request);
 
       if (!plan) {
-        console.log('TransferStore: No plan returned from transaction planner');
         this.resetFee();
         return;
       }
 
       const fee = plan.transactionParameters?.fee;
-      console.log('TransferStore: Fee calculated:', fee);
 
       // Get fee asset metadata
       let feeAssetMetadata: Metadata | undefined;
@@ -266,7 +250,6 @@ export class TransferStore {
         feeAssetMetadata = this.rootStore.assetsStore.allAssets.find(
           asset => asset.symbol === 'UM' || asset.display === 'penumbra',
         );
-        console.log('TransferStore: Using default UM token for fee metadata');
       } else {
         const assetIdBase64 = uint8ArrayToBase64(fee.assetId.inner);
         // Search through all assets to find matching metadata
@@ -279,7 +262,6 @@ export class TransferStore {
             }
           }
         }
-        console.log('TransferStore: Found fee asset metadata:', feeAssetMetadata?.symbol);
       }
 
       runInAction(() => {
@@ -287,10 +269,7 @@ export class TransferStore {
         this.sendState.feeAssetMetadata = feeAssetMetadata;
         this.sendState.isFeeLoading = false;
       });
-
-      console.log('TransferStore: Fee estimation completed successfully');
     } catch (error) {
-      console.error('TransferStore: Error calculating fee:', error);
       this.resetFee();
     }
   }
@@ -325,7 +304,7 @@ export class TransferStore {
         return bech32mAddress(response.address);
       }
     } catch (error) {
-      console.error('TransferStore: Error generating dummy address:', error);
+      // log removed
     }
 
     return '';
@@ -490,7 +469,7 @@ export class TransferStore {
         }
       }
     } catch (error) {
-      console.error('Error loading account address:', error);
+      // log removed
     }
   }
 
@@ -502,7 +481,7 @@ export class TransferStore {
     try {
       await navigator.clipboard.writeText(this.receiveState.accountAddress);
     } catch (error) {
-      console.error('Error copying address:', error);
+      // log removed
     }
   }
 

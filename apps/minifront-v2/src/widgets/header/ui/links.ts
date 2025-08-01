@@ -6,5 +6,5 @@ export const HEADER_LINKS = [
   { label: 'Shielding', value: PagePath.Shielding, icon: Shield },
   { label: 'Transfer', value: PagePath.Transfer, icon: ArrowUpFromDot },
   { label: 'Swap', value: '/swap', icon: ArrowLeftRight },
-  { label: 'Stake', value: '/stake', icon: MoonStar },
+  { label: 'Stake', value: PagePath.Stake, icon: MoonStar },
 ];

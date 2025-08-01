@@ -1,7 +1,6 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { TextInput } from '../TextInput';
 import { Button } from '../Button';
-import { useDensity } from '../utils/density';
 
 export interface AccountSelectorProps {
   /** The current account index */
@@ -74,7 +73,6 @@ export const AccountSelector = ({
   getDisplayValue,
   label,
 }: AccountSelectorProps) => {
-  const density = useDensity();
   const displayValue = getDisplayValue ? getDisplayValue(value) : `Account ${value}`;
 
   const handlePrevious = () => {
@@ -105,7 +103,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density={density}
+            density='compact'
           >
             Previous Account
           </Button>
@@ -117,7 +115,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density={density}
+            density='compact'
           >
             Next Account
           </Button>
