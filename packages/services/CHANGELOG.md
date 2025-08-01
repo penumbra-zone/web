@@ -1,5 +1,12 @@
 # @penumbra-zone/router
 
+## 69.0.1
+
+### Patch Changes
+
+- Updated dependencies [c675735]
+  - @penumbra-zone/storage@62.0.1
+
 ## 69.0.0
 
 ### Patch Changes
