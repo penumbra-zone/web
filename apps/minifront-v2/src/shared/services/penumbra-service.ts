@@ -17,6 +17,8 @@ import {
   DelegationsByAddressIndexRequest,
   DelegationsByAddressIndexRequest_Filter,
   TransactionPlannerRequest,
+  StatusRequest,
+  StatusStreamRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { TimestampByHeightRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -25,10 +27,11 @@ import { penumbra } from '../lib/penumbra';
 import { ValidatorInfoRequest } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 // Error detection functions (from legacy minifront)
-const userDeniedTransaction = (e: unknown): boolean =>
+// These are used in the transaction service
+export const userDeniedTransaction = (e: unknown): boolean =>
   e instanceof Error && e.message.startsWith('[permission_denied]');
 
-const unauthenticated = (e: unknown): boolean =>
+export const unauthenticated = (e: unknown): boolean =>
   e instanceof Error && e.message.includes('unauthenticated');
 
 export class PenumbraService {
@@ -97,6 +100,24 @@ export class PenumbraService {
   }
 
   /**
+   * Get initial status with sync information
+   * @returns Promise of status response
+   */
+  async getStatus() {
+    const request = new StatusRequest({});
+    return penumbra.service(ViewService).status(request);
+  }
+
+  /**
+   * Get a stream of status updates with sync information
+   * @returns Async iterable of status stream responses
+   */
+  getStatusStream() {
+    const request = new StatusStreamRequest({});
+    return penumbra.service(ViewService).statusStream(request);
+  }
+
+  /**
    * Get delegations by address index
    * @param account - Account number to get delegations for
    * @param filter - Filter for delegation types (default: ALL to show all validators)
@@ -124,62 +145,17 @@ export class PenumbraService {
   }
 
   /**
-   * Plan, build, and broadcast a transaction
+   * Plan, build, and broadcast a transaction with toast notifications
    * @param request - Transaction planner request
+   * @param classification - Transaction classification for toast labeling
    * @returns Promise that resolves when transaction is broadcast, or undefined if user cancelled
    */
-  async planBuildBroadcast(request: TransactionPlannerRequest): Promise<any> {
-    try {
-      // Plan the transaction
-      const planResponse = await penumbra.service(ViewService).transactionPlanner(request);
-      if (!planResponse.plan) {
-        throw new Error('Failed to create transaction plan');
-      }
-
-      // Build the transaction with user authorization, handling the stream properly
-      const buildStream = penumbra.service(ViewService).authorizeAndBuild({
-        transactionPlan: planResponse.plan,
-      });
-
-      let transaction;
-      for await (const { status } of buildStream) {
-        if (status.case === 'complete' && status.value.transaction) {
-          transaction = status.value.transaction;
-          break;
-        }
-        // Handle other status cases if needed (e.g., progress, error)
-      }
-
-      if (!transaction) {
-        throw new Error('Failed to build transaction');
-      }
-
-      // Broadcast the transaction, handling the stream properly
-      const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
-        transaction,
-        awaitDetection: true,
-      });
-
-      for await (const { status } of broadcastStream) {
-        if (status.case === 'confirmed') {
-          break;
-        }
-        // Handle other status cases if needed
-      }
-
-      return { success: true };
-    } catch (e) {
-      if (userDeniedTransaction(e)) {
-        // User cancelled - return undefined instead of throwing
-        console.log('User cancelled transaction');
-        return undefined;
-      } else if (unauthenticated(e)) {
-        throw new Error('Authentication required. Please check your wallet connection.');
-      } else {
-        // Re-throw actual errors
-        throw e;
-      }
-    }
+  async planBuildBroadcast(
+    request: TransactionPlannerRequest,
+    classification: 'delegate' | 'undelegate' | 'undelegateClaim' = 'delegate',
+  ): Promise<any> {
+    const { planBuildBroadcast } = await import('./transaction');
+    return planBuildBroadcast(classification, request);
   }
 
   /**

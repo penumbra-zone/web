@@ -146,7 +146,7 @@ export const TransactionCard = observer(
     return (
       <div>
         <Card title={cardTitle} headerAction={headerAction} endContent={headerContent}>
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-1 max-h-[840px] min-h-[120px] overflow-y-auto'>
             {loadingTransactions ? (
               Array.from({ length: getSkeletonLength() }).map((_, i) => (
                 <div key={i} className='h-16 w-full'>
@@ -213,7 +213,8 @@ export const TransactionCard = observer(
                   <div className='text-muted-foreground flex min-h-[120px] flex-col items-center justify-center p-6 text-center'>
                     <p className='text-sm'>You have no transactions yet.</p>
                     <p className='mt-1 text-xs'>
-                      Send, receive, or trade assets to see your transaction history here.
+                      Send, receive, or trade assets to see your transaction history here or try
+                      refreshing the page in case they are not showing up.
                     </p>
                   </div>
                 )}

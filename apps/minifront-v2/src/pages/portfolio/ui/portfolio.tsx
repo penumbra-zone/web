@@ -83,7 +83,7 @@ export const Portfolio = observer((): React.ReactNode => {
 
   return (
     <div className='flex w-full flex-col items-center'>
-      <div className='grid w-full flex-1 grid-cols-1 gap-4 md:grid-cols-2'>
+      <div className='grid w-full flex-1 grid-cols-1 gap-4 md:grid-cols-2 max-w-screen-lg'>
         <div>
           <AssetCard accounts={accounts} showInfoButton={true} />
         </div>

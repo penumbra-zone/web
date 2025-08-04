@@ -415,6 +415,13 @@ export class DepositStore {
       return;
     }
 
+    const { openToast } = await import('@penumbra-zone/ui/Toast');
+    const toast = openToast({
+      type: 'loading',
+      message: 'Issuing IBC deposit transaction',
+      persistent: true,
+    });
+
     runInAction(() => {
       this.depositState = {
         ...this.depositState,
@@ -483,11 +490,28 @@ export class DepositStore {
         message: ibcTransferMsg,
       });
 
+      toast.update({
+        type: 'loading',
+        message: `Waiting for confirmation on ${selectedChain.displayName}`,
+      });
+
       const signedTx = await client.sign(senderAddress, [ibcTransferMsg], fee, '');
       const result = await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
+
       if (result.code !== 0) {
         throw new Error(`Tendermint error: ${result.code}`);
       }
+
+      // Show success toast
+      toast.update({
+        type: 'success',
+        message: 'IBC deposit succeeded! 🎉',
+        dismissible: true,
+        description: result.transactionHash
+          ? `Transaction ${result.transactionHash.slice(0, 8)}...${result.transactionHash.slice(-8)} confirmed on ${selectedChain.displayName}.`
+          : `Transaction confirmed on ${selectedChain.displayName}.`,
+        persistent: true,
+      });
 
       runInAction(() => {
         this.depositState = {
@@ -499,10 +523,39 @@ export class DepositStore {
 
       await this.rootStore.balancesStore.loadBalances();
     } catch (error) {
+      // Check if user denied the transaction
+      const errorString = String(error).toLowerCase();
+      const isUserDenied =
+        errorString.includes('user denied') ||
+        errorString.includes('user rejected') ||
+        errorString.includes('cancelled') ||
+        errorString.includes('canceled');
+
+      if (isUserDenied) {
+        toast.update({
+          type: 'info',
+          message: 'Deposit canceled',
+          description: undefined,
+          persistent: false,
+        });
+      } else {
+        toast.update({
+          type: 'error',
+          message: 'IBC deposit failed',
+          description: String(error),
+          persistent: true,
+          dismissible: true,
+        });
+      }
+
       runInAction(() => {
         this.depositState = {
           ...this.depositState,
-          error: error instanceof Error ? error.message : 'Deposit failed',
+          error: !isUserDenied
+            ? error instanceof Error
+              ? error.message
+              : 'Deposit failed'
+            : undefined,
           isLoading: false,
         };
       });

@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTransferStore } from '@/shared/stores/store-context';
 import { Button } from '@penumbra-zone/ui/Button';

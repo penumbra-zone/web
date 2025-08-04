@@ -386,41 +386,9 @@ export class TransferStore {
     try {
       const request = await this.buildTransactionRequest();
 
-      // Plan the transaction
-      const { plan } = await penumbra.service(ViewService).transactionPlanner(request);
-      if (!plan) {
-        throw new Error('No plan in planner response');
-      }
-
-      // Build the transaction with user authorization
-      const buildStream = penumbra
-        .service(ViewService)
-        .authorizeAndBuild({ transactionPlan: plan });
-      let transaction;
-
-      for await (const { status } of buildStream) {
-        if (status.case === 'complete' && status.value.transaction) {
-          transaction = status.value.transaction;
-          break;
-        }
-      }
-
-      if (!transaction) {
-        throw new Error('Failed to build transaction');
-      }
-
-      // Broadcast the transaction
-      const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
-        transaction,
-        awaitDetection: true,
-      });
-
-      for await (const { status } of broadcastStream) {
-        if (status.case === 'confirmed') {
-          // Transaction confirmed
-          break;
-        }
-      }
+      // Use the toast-enabled transaction helper
+      const { planBuildBroadcast } = await import('../services/transaction');
+      await planBuildBroadcast('send', request);
 
       // Reset form after successful send
       runInAction(() => {
@@ -431,9 +399,17 @@ export class TransferStore {
 
       // Refresh balances
       await this.rootStore.balancesStore.loadBalances();
+      // Refresh transactions so that new transfer appears immediately
+      void this.rootStore.transactionsStore.loadTransactions();
     } catch (error) {
+      // Only set error state if it's not a user denial (toast handles those)
+      const { userDeniedTransaction } = await import('../services/transaction');
+      if (!userDeniedTransaction(error)) {
+        runInAction(() => {
+          this.sendState.error = error instanceof Error ? error.message : 'Transaction failed';
+        });
+      }
       runInAction(() => {
-        this.sendState.error = error instanceof Error ? error.message : 'Transaction failed';
         this.sendState.isLoading = false;
       });
     }

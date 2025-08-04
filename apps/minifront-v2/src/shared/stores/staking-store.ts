@@ -639,7 +639,7 @@ export class StakingStore {
       });
 
       // Use the new planBuildBroadcast method
-      const result = await this.rootStore.penumbraService.planBuildBroadcast(request);
+      const result = await this.rootStore.penumbraService.planBuildBroadcast(request, 'delegate');
 
       // If result is undefined, user cancelled the transaction
       if (result === undefined) {
@@ -709,7 +709,7 @@ export class StakingStore {
       });
 
       // Use the new planBuildBroadcast method
-      const result = await this.rootStore.penumbraService.planBuildBroadcast(request);
+      const result = await this.rootStore.penumbraService.planBuildBroadcast(request, 'undelegate');
 
       // If result is undefined, user cancelled the transaction
       if (result === undefined) {
@@ -784,7 +784,10 @@ export class StakingStore {
       });
 
       // Use the fixed planBuildBroadcast method
-      const result = await this.rootStore.penumbraService.planBuildBroadcast(request);
+      const result = await this.rootStore.penumbraService.planBuildBroadcast(
+        request,
+        'undelegateClaim',
+      );
 
       // If result is undefined, user cancelled the transaction
       if (result === undefined) {

@@ -10,8 +10,8 @@ export const Header = () => {
     <MobileNav>
       {({ isOpen }) => (
         <header
-          className={`flex items-start justify-between py-5 transition-all duration-300 ease-in-out ${
-            isOpen ? 'bg-background min-h-screen backdrop-blur-xl' : ''
+          className={`fixed top-0 left-0 z-10 right-0 px-4 flex items-start justify-between py-5 transition-all duration-300 ease-in-out ${
+            isOpen ? 'bg-shield-background min-h-screen' : ''
           }`}
         >
           <HeaderLogo />
@@ -32,7 +32,7 @@ export const Header = () => {
 
           {/* Mobile navigation content */}
           {isOpen && (
-            <div className='absolute top-24 right-0 left-0 lg:hidden'>
+            <div className='absolute top-24 right-0 left-0 lg:hidden px-4'>
               <MobileNav.Content />
             </div>
           )}
