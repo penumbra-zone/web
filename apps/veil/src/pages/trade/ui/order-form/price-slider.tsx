@@ -31,7 +31,6 @@ const Thumb = ({
   i,
   values,
   scale,
-  max,
   onMove,
   elevate,
   onPointerDown,
@@ -40,7 +39,6 @@ const Thumb = ({
   i: number;
   values: [number, number];
   scale: ScaleLinear<number, number>;
-  max: number;
   onMove: (value: number) => void;
   elevate: boolean;
   onPointerDown: () => void;
@@ -65,7 +63,7 @@ const Thumb = ({
     const dx = deltaRef.current.deltaX;
 
     const minX = i === 0 ? 0 : scale(otherValue);
-    const maxX = i === 1 ? scale(max) : scale(otherValue);
+    const maxX = i === 1 ? scale(scale.domain()[1] ?? 0) : scale(otherValue);
     const nextX = Math.min(Math.max(minX, scale(value) + dx), maxX);
     onMove(scale.invert(nextX));
 
@@ -269,6 +267,7 @@ export const PriceSlider = ({
   const setInputValue = (index: number, value: string) => {
     const value1 = index === 0 ? value : (values[0]?.toString() ?? '');
     const value2 = index === 1 ? value : (values[1]?.toString() ?? '');
+
     changeValues(Number(value1), Number(value2));
     setInputValues([value1, value2]);
   };
@@ -288,6 +287,18 @@ export const PriceSlider = ({
 
   useEffect(() => {
     if (width) {
+      if (Number(values[0]) < min || Number(values[1]) > max) {
+        scaleRef.current = scaleLinear()
+          .domain([
+            Math.min(min, Number(values[0])), // 5% margin
+            Math.max(max, Number(values[1])),
+          ])
+          .range([0, width]);
+
+        setScaleLoaded(prev => prev + 1);
+        return;
+      }
+
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
 
       // update scaleLoaded to trigger re-render
@@ -300,6 +311,8 @@ export const PriceSlider = ({
   const leftX1 = scaleLoaded && scale && values[1] ? Math.max(0, scale(values[1])) : undefined;
   const rightX =
     scaleLoaded && scale && values[1] ? Math.min(width, width - scale(values[1])) : undefined;
+  const midpointX =
+    scaleLoaded && scale && marketPrice ? Math.max(0, scale(marketPrice)) : undefined;
 
   return (
     <div>
@@ -311,9 +324,12 @@ export const PriceSlider = ({
           {marketPrice} {quoteAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[98px] w-full'>
+      <div ref={ref} className='relative z-0 h-[98px] w-full overflow-hidden'>
         {/* midprice line */}
-        <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
+        <div
+          className='absolute top-0 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast'
+          style={{ left: midpointX }}
+        />
         {!!scaleLoaded && scale && (
           <>
             <DepthChart scale={scale} width={width} height={62} />
@@ -333,20 +349,21 @@ export const PriceSlider = ({
 
                 return (
                   <React.Fragment key={i}>
-                    <Thumb
-                      x={x}
-                      i={i}
-                      values={values}
-                      scale={scale}
-                      max={max}
-                      elevate={elevate}
-                      onPointerDown={() => setElevateThumb(i)}
-                      onMove={nextValue =>
-                        i === 0
-                          ? changeValues(nextValue, values[1])
-                          : changeValues(values[0], nextValue)
-                      }
-                    />
+                    {x !== undefined && (
+                      <Thumb
+                        x={x}
+                        i={i}
+                        values={values}
+                        scale={scale}
+                        elevate={elevate}
+                        onPointerDown={() => setElevateThumb(i)}
+                        onMove={nextValue =>
+                          i === 0
+                            ? changeValues(Math.max(scale.invert(1), nextValue), values[1])
+                            : changeValues(values[0], Math.min(scale.invert(width - 1), nextValue))
+                        }
+                      />
+                    )}
                     <PercentageInput
                       x={x}
                       i={i}
