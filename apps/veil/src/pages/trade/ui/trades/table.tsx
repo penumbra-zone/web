@@ -52,7 +52,7 @@ export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
 
         {rows.map((trade, index) => (
           <div
-            key={data ? trade.timestamp + trade.amount + trade.kind : index}
+            key={`${trade.timestamp}-${trade.amount}-${trade.kind}-${index}`}
             className={cn(
               'relative col-span-4 grid grid-cols-subgrid',
               'group [&:hover>div:not(:last-child)]:invisible',
