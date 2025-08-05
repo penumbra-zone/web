@@ -43,9 +43,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   }
 
   const stakeClient = ctx.values.get(stakeClientCtx);
-  if (!stakeClient) {
-    throw new Error('Staking context not found');
-  }
 
   const delTokenTracker = await DelegationTokenTracker.init({ addressIndex, ctx });
 

@@ -2,9 +2,13 @@ import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+
+export const sha256Hash = async (inputBuffer: Uint8Array): Promise<Uint8Array> => {
+  const digestBuffer = await crypto.subtle.digest('SHA-256', inputBuffer);
+  return new Uint8Array(digestBuffer);
+};
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
@@ -20,7 +24,6 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
 
   const broadcastId = await querier.tendermint.broadcastTx(req.transaction);
   if (!id.equals(broadcastId)) {
-    console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(
       `broadcast transaction id disagrees: expected ${uint8ArrayToHex(id.inner)} but tendermint ${uint8ArrayToHex(broadcastId.inner)}`,
     );
