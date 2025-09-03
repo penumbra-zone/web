@@ -20,9 +20,7 @@ import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
     const stakeClient = ctx.values.get(stakeClientCtx);
-    if (!stakeClient) {
-      throw new Error('Staking context not found');
-    }
+
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),
       ctx,

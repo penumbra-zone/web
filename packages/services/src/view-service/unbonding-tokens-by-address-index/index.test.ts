@@ -7,7 +7,7 @@ import {
   UnbondingTokensByAddressIndexResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService, StakeService } from '@penumbra-zone/protobuf';
-import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, Client } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from './index.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
@@ -41,7 +41,7 @@ const mockCtx = createHandlerContext({
   url: '/mock',
   contextValues: createContextValues().set(
     stakeClientCtx,
-    mockStakingClient as unknown as PromiseClient<typeof StakeService>,
+    mockStakingClient as unknown as Client<typeof StakeService>,
   ),
 });
 

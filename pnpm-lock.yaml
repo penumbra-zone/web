@@ -970,9 +970,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../crypto
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
@@ -982,9 +979,6 @@ importers:
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
-      '@penumbra-zone/transport-dom':
-        specifier: workspace:*
-        version: link:../transport-dom
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
