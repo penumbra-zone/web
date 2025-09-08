@@ -26,12 +26,10 @@
     }
   },
   "dependencies": {
-    "bip39": "^3.1.0",
-    "crypto-js": "^4.2.0"
+    "bip39": "^3.1.0"
   },
   "devDependencies": {
-    "@penumbra-zone/types": "workspace:*",
-    "@types/crypto-js": "^4.2.2"
+    "@penumbra-zone/types": "workspace:*"
   },
   "peerDependencies": {
     "@penumbra-zone/types": "workspace:*"
