@@ -891,16 +891,10 @@ importers:
       bip39:
         specifier: ^3.1.0
         version: 3.1.0
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
     devDependencies:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
-      '@types/crypto-js':
-        specifier: ^4.2.2
-        version: 4.2.2
 
   packages/getters:
     devDependencies:
@@ -6498,9 +6492,6 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
-
-  '@types/crypto-js@4.2.2':
-    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
 
   '@types/css-font-loading-module@0.0.7':
     resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
@@ -23176,8 +23167,6 @@ snapshots:
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.15.21
-
-  '@types/crypto-js@4.2.2': {}
 
   '@types/css-font-loading-module@0.0.7': {}
 
