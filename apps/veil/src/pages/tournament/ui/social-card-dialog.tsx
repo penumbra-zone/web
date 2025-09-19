@@ -87,7 +87,7 @@ const SocialCardCanvas = ({
     const canvas = canvasRef.current;
     const exponent = getDisplayDenomExponent.optional(stakingToken);
 
-    // Check canvas requirments before rendering
+    // Check canvas requirements before rendering
     if (!canvas || exponent === undefined) {
       return;
     }

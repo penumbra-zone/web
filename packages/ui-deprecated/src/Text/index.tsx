@@ -178,7 +178,7 @@ type TextType =
        * Note that this is the only component in the entire Penumbra UI library
        * that renders an external margin. It's a convenience for developers who
        * don't want to wrap each `<Text p />` in a `<div />` with the
-       * appropriate margin, or a flex columnn with a gap.
+       * appropriate margin, or a flex column with a gap.
        */
       p: true;
     })
