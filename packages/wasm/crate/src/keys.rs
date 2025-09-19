@@ -15,7 +15,7 @@ use crate::error::WasmResult;
 use crate::utils;
 
 /// Loads the proving key as a collection of bytes, and to sets the keys in memory
-/// dynamicaly at runtime. Failure to bundle the proving keys in the wasm binary
+/// dynamically at runtime. Failure to bundle the proving keys in the wasm binary
 /// or call the load function will fail to generate a proof. Consumers of this
 /// function will additionally require downloading the proving key parameter `.bin`
 /// file for each key type.
