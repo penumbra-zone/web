@@ -1,5 +1,14 @@
 # penumbra-veil
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [d170339]
+- Updated dependencies [a05953a]
+- Updated dependencies [a6b95be]
+  - @penumbra-zone/ui@16.0.4
+
 ## 0.2.3
 
 ### Patch Changes
