@@ -60,7 +60,7 @@ import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { sctPosition } from '@penumbra-zone/wasm/tree';
+import { sctPosition } from '@rotko/penumbra-wasm/tree';
 import {
   AuctionId,
   DutchAuctionDescription,

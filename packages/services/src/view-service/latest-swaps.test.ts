@@ -16,7 +16,7 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { latestSwaps } from './latest-swaps.js';
 import { CommitmentSource } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getAddressByIndex } from '@penumbra-zone/wasm/keys';
+import { getAddressByIndex } from '@rotko/penumbra-wasm/keys';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { SHITMOS_METADATA, UM_METADATA, USDC_METADATA } from './util/data.js';

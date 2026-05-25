@@ -19,7 +19,7 @@ import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 const mockTransactionSummary = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm/transaction', () => ({
+vi.mock('@rotko/penumbra-wasm/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
   generateTransactionSummary: mockTransactionSummary,
 }));

@@ -4,7 +4,7 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { ViewService } from '@penumbra-zone/protobuf';
 import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { indexByAddress } from './index-by-address.js';
-import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
+import { getAddressByIndex, getEphemeralByIndex } from '@rotko/penumbra-wasm/keys';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { testFullViewingKey } from '../test-utils.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';

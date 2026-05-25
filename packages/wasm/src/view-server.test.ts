@@ -3,14 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getFullViewingKey } from './keys.js';
 import { ViewServer } from '../wasm/index.js';
 import { IDB_TABLES, IdbConstants } from '@penumbra-zone/types/indexed-db';
+import { initWasm } from './init.js';
 
 describe('wasmViewServer', () => {
   it('does not raise zod validation error', async () => {
     const seedPhrase =
       'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
 
-    const spendKey = generateSpendKey(seedPhrase);
-    const fullViewingKey = getFullViewingKey(spendKey);
+    // Initialize WASM and get keys
+    await initWasm();
+    const spendKey = await generateSpendKey(seedPhrase);
+    const fullViewingKey = await getFullViewingKey(spendKey);
     const idbConstants = {
       name: 'dbName',
       version: 123,

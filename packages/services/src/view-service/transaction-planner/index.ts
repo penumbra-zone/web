@@ -1,6 +1,6 @@
 import type { Impl } from '../index.js';
 import { servicesCtx } from '../../ctx/prax.js';
-import { planTransaction } from '@penumbra-zone/wasm/planner';
+import { planTransaction } from '@rotko/penumbra-wasm/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
 import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';

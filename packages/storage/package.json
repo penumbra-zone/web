@@ -30,7 +30,7 @@
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*",
+    "@rotko/penumbra-wasm": "workspace:*",
     "idb": "^8.0.0"
   },
   "devDependencies": {
@@ -45,6 +45,6 @@
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
+    "@rotko/penumbra-wasm": "workspace:*"
   }
 }

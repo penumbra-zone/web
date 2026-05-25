@@ -1,6 +1,6 @@
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
+import { assetIdFromBaseDenom } from '@rotko/penumbra-wasm/asset';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 // TODO: change other transaction planner request types to default to priority fee selection

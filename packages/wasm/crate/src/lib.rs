@@ -16,3 +16,8 @@ pub mod tx;
 pub mod utils;
 pub mod view_server;
 pub mod voting;
+
+// Re-export wasm-bindgen-rayon's initThreadPool when parallel feature is enabled.
+// This is required for the TypeScript side to initialize the thread pool.
+#[cfg(feature = "parallel")]
+pub use wasm_bindgen_rayon::init_thread_pool as initThreadPool;

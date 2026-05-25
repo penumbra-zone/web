@@ -1,5 +1,5 @@
 import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { customizeSymbol } from '@rotko/penumbra-wasm/metadata';
 import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { Any } from '@bufbuild/protobuf';

@@ -19,7 +19,7 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm/planner', () => ({
+vi.mock('@rotko/penumbra-wasm/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {

@@ -20,5 +20,5 @@ export interface ViewServerInterface {
 
   getSctRoot(): MerkleRoot;
 
-  isControlledAddress(address: Address): boolean;
+  isControlledAddress(address: Address): Promise<boolean>;
 }

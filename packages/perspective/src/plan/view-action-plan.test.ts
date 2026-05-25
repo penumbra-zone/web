@@ -28,7 +28,7 @@ import {
   AuctionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 
-vi.mock('@penumbra-zone/wasm/auction', () => ({
+vi.mock('@rotko/penumbra-wasm/auction', () => ({
   getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),
 }));
 

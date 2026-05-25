@@ -1,0 +1,17 @@
+# WASM build configuration for penumbra-wasm
+# Enables SIMD 128-bit instructions for better performance
+#
+# For SINGLE-THREADED builds (default):
+#   wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm
+#
+# For MULTI-THREADED builds with rayon (requires nightly + build-std):
+#   See scripts/build-wasm-parallel.sh
+
+[target.wasm32-unknown-unknown]
+# Enable SIMD 128-bit for vectorized cryptographic operations
+rustflags = ["-C", "target-feature=+simd128"]
+
+# For local development with native target (optional)
+# Uncomment to enable native SIMD on x86_64
+# [target.x86_64-unknown-linux-gnu]
+# rustflags = ["-C", "target-cpu=native"]

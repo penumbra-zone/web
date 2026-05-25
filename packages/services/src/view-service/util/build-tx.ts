@@ -4,7 +4,7 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { buildParallel } from '@penumbra-zone/wasm/build';
+import { buildParallel } from '@rotko/penumbra-wasm/build';
 import { offscreenClient } from '../../offscreen-client.js';
 import {
   AuthorizeAndBuildResponse,
@@ -12,8 +12,11 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
-
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  isParallelBuildAvailable,
+  optimisticParallelBuild,
+} from './build-tx-parallel.js';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,
@@ -72,4 +75,38 @@ const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: Prom
       // TODO: satisfies type parameter?
     } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
   }
+};
+
+/**
+ * Build a transaction, using rayon parallel build if available,
+ * otherwise falling back to offscreen-based JS worker build.
+ *
+ * Rayon parallel build is faster because:
+ * - All actions are built concurrently in a single WASM call
+ * - No JS worker overhead per action
+ * - Rayon manages the thread pool efficiently
+ *
+ * @param transactionPlan - The transaction plan
+ * @param witnessData - The witness data
+ * @param authorizationRequest - Promise for authorization data
+ * @param fvk - The full viewing key
+ * @param useRayonParallel - If true and SharedArrayBuffer is available, use rayon parallel build
+ */
+export const buildTransaction = async function* (
+  transactionPlan: TransactionPlan,
+  witnessData: WitnessData,
+  authorizationRequest: PromiseLike<AuthorizationData>,
+  fvk: FullViewingKey,
+  useRayonParallel = true,
+): AsyncGenerator<PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>> {
+  // Use rayon parallel build if enabled and SharedArrayBuffer is available
+  if (useRayonParallel && isParallelBuildAvailable()) {
+    console.log('[Build] Using rayon parallel build');
+    yield* optimisticParallelBuild(transactionPlan, witnessData, authorizationRequest, fvk);
+    return;
+  }
+
+  // Fall back to offscreen-based JS worker build
+  console.log('[Build] Using offscreen JS worker build');
+  yield* optimisticBuild(transactionPlan, witnessData, authorizationRequest, fvk);
 };

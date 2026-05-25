@@ -1,5 +1,5 @@
 import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
+import { getTransmissionKeyByAddress } from '@rotko/penumbra-wasm/keys';
 
 // Some transaction views (TXVs) require additional preprocessing before being rendered
 // in the UI component library. For example, when handling IBC withdrawals with transparent

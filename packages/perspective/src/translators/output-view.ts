@@ -39,7 +39,10 @@ export const asReceiverOutputView: Translator<
   const addressViewCase = outputView.outputView.value?.note?.address?.addressView.case;
   const address = outputView.outputView.value?.note?.address?.addressView.value?.address;
 
-  if (addressViewCase === 'decoded' && address && (await isControlledAddress(address))) {
+  // Check that address has actual data (inner bytes or alt_bech32m string)
+  const hasValidAddress = address && (address.inner.length > 0 || address.altBech32m.length > 0);
+
+  if (addressViewCase === 'decoded' && hasValidAddress && (await isControlledAddress(address))) {
     return asOpaqueOutputView(outputView);
   } else {
     return outputView;

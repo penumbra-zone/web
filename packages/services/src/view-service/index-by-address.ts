@@ -1,6 +1,6 @@
 import type { Impl } from './index.js';
 
-import { getAddressIndexByAddress } from '@penumbra-zone/wasm/address';
+import { getAddressIndexByAddress } from '@rotko/penumbra-wasm/address';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 import { fvkCtx } from '../ctx/full-viewing-key.js';

@@ -1,5 +1,5 @@
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user.js';
-import { isControlledAddress } from '@penumbra-zone/wasm/address';
+import { isControlledAddress } from '@rotko/penumbra-wasm/address';
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 

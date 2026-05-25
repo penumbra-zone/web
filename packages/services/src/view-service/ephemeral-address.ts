@@ -1,6 +1,6 @@
 import type { Impl } from './index.js';
 
-import { getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
+import { getEphemeralByIndex } from '@rotko/penumbra-wasm/keys';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const ephemeralAddress: Impl['ephemeralAddress'] = async (req, ctx) => {

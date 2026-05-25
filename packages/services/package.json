@@ -38,7 +38,7 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*",
+    "@rotko/penumbra-wasm": "workspace:*",
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
@@ -51,6 +51,6 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
+    "@rotko/penumbra-wasm": "workspace:*"
   }
 }

@@ -7,48 +7,56 @@ import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 describe('address', () => {
   const seedPhrase =
     'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
-  const spendKey = generateSpendKey(seedPhrase);
-  const fullViewingKey = getFullViewingKey(spendKey);
 
   describe('getAddressIndexByAddress()', () => {
-    it('works with controlled addr', () => {
-      const address = getAddressByIndex(fullViewingKey, 1);
+    it('works with controlled addr', async () => {
+      const spendKey = await generateSpendKey(seedPhrase);
+      const fullViewingKey = await getFullViewingKey(spendKey);
+      const address = await getAddressByIndex(fullViewingKey, 1);
+      const index = await getAddressIndexByAddress(fullViewingKey, address);
 
-      expect(getAddressIndexByAddress(fullViewingKey, address)!.account).toBe(1);
+      expect(index!.account).toBe(1);
     });
 
-    it('returns undefined with uncontrolled addr', () => {
+    it('returns undefined with uncontrolled addr', async () => {
+      const spendKey = await generateSpendKey(seedPhrase);
+      const fullViewingKey = await getFullViewingKey(spendKey);
       const address = new Address(
         addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),
       );
 
-      expect(getAddressIndexByAddress(fullViewingKey, address)).toBeUndefined();
+      expect(await getAddressIndexByAddress(fullViewingKey, address)).toBeUndefined();
     });
   });
 
   describe('isControlledAddress()', () => {
-    it('returns true if the address is controlled', () => {
-      const address = getAddressByIndex(fullViewingKey, 1);
+    it('returns true if the address is controlled', async () => {
+      const spendKey = await generateSpendKey(seedPhrase);
+      const fullViewingKey = await getFullViewingKey(spendKey);
+      const address = await getAddressByIndex(fullViewingKey, 1);
 
-      expect(isControlledAddress(fullViewingKey, address)).toBe(true);
+      expect(await isControlledAddress(fullViewingKey, address)).toBe(true);
     });
 
-    it('returns false if the address is not controlled', () => {
-      const spendKey = generateSpendKey(seedPhrase);
-      const fullViewingKey = getFullViewingKey(spendKey);
+    it('returns false if the address is not controlled', async () => {
+      const spendKey = await generateSpendKey(seedPhrase);
+      const fullViewingKey = await getFullViewingKey(spendKey);
       const address = new Address(
         addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),
       );
 
-      expect(isControlledAddress(fullViewingKey, address)).toBe(false);
+      expect(await isControlledAddress(fullViewingKey, address)).toBe(false);
     });
 
-    it('returns false if the address is undefined', () => {
-      expect(isControlledAddress(fullViewingKey, undefined)).toBe(false);
+    it('returns false if the address is undefined', async () => {
+      const spendKey = await generateSpendKey(seedPhrase);
+      const fullViewingKey = await getFullViewingKey(spendKey);
+
+      expect(await isControlledAddress(fullViewingKey, undefined)).toBe(false);
     });
   });
 });

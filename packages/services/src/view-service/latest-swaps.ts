@@ -7,7 +7,7 @@ import {
   DirectedTradingPair,
   TradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { getAddressByIndex } from '@penumbra-zone/wasm/keys';
+import { getAddressByIndex } from '@rotko/penumbra-wasm/keys';
 
 export const latestSwaps: Impl['latestSwaps'] = async function* (_req, ctx) {
   const services = await ctx.values.get(servicesCtx)();

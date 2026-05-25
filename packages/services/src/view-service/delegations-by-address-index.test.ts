@@ -29,7 +29,7 @@ import {
   ValueView_KnownAssetId,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
-vi.mock('@penumbra-zone/wasm/metadata', () => ({
+vi.mock('@rotko/penumbra-wasm/metadata', () => ({
   customizeSymbol: (metadata: Metadata) => metadata,
 }));
 

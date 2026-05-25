@@ -24,7 +24,7 @@ import {
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getAuctionId } from '@penumbra-zone/wasm/auction';
+import { getAuctionId } from '@rotko/penumbra-wasm/auction';
 import {
   getInputAssetId,
   getOutputAssetId,

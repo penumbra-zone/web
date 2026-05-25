@@ -4,7 +4,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import {
   generateTransactionInfo,
   generateTransactionSummary,
-} from '@penumbra-zone/wasm/transaction';
+} from '@rotko/penumbra-wasm/transaction';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import { txvTranslator } from './util/transaction-view.js';

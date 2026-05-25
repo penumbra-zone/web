@@ -125,7 +125,7 @@ export class ViewServer implements ViewServerInterface {
     };
   }
 
-  isControlledAddress(address: Address): boolean {
+  isControlledAddress(address: Address): Promise<boolean> {
     return isControlledAddress(this.fullViewingKey, address);
   }
 }

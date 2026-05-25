@@ -47,6 +47,24 @@ pub fn authorize(spend_key: &[u8], transaction_plan: &[u8]) -> WasmResult<Vec<u8
     Ok(auth_data.encode_to_vec())
 }
 
+/// Compute the effect hash for a transaction plan using the full viewing key.
+/// Does NOT require the spend key — used for airgap signing where the spend key
+/// lives on a separate device (Zigner).
+/// Arguments:
+///     full_viewing_key: `byte representation inner FullViewingKey`
+///     transaction_plan: `pb::TransactionPlan`
+/// Returns: `EffectHash` (64 bytes)
+#[wasm_bindgen]
+pub fn compute_effect_hash(full_viewing_key: &[u8], transaction_plan: &[u8]) -> WasmResult<Vec<u8>> {
+    utils::set_panic_hook();
+
+    let fvk = FullViewingKey::decode(full_viewing_key)?;
+    let plan = TransactionPlan::decode(transaction_plan)?;
+
+    let effect_hash = plan.effect_hash(&fvk)?;
+    Ok(effect_hash.as_bytes().to_vec())
+}
+
 /// Get witness data
 /// Obtaining witness data is directly related to SCT so we need to pass the tree data
 /// Arguments:

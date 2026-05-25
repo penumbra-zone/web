@@ -1,12 +1,18 @@
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   Action,
+  AuthorizationData,
+  Transaction,
   TransactionPlan,
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { ActionBuildMessage, OffscreenMessage } from '@penumbra-zone/types/internal-msg/offscreen';
+import {
+  ActionBuildMessage,
+  ParallelBuildMessage,
+  OffscreenMessage,
+} from '@penumbra-zone/types/internal-msg/offscreen';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 
@@ -99,4 +105,47 @@ const buildActions = (
   return buildTasks;
 };
 
-export const offscreenClient = { buildActions };
+/**
+ * Build a complete transaction in parallel using rayon thread pool.
+ * All actions are built concurrently in WASM via rayon's par_iter().
+ *
+ * This is faster than buildActions for multi-action transactions because:
+ * - No JS worker overhead per action
+ * - Actions are built concurrently in a single WASM call
+ * - Rayon manages the thread pool efficiently
+ *
+ * Requires SharedArrayBuffer support (available in Chrome extensions).
+ *
+ * @param transactionPlan - The transaction plan
+ * @param witness - The witness data
+ * @param fullViewingKey - The full viewing key
+ * @param authData - The authorization data
+ * @returns The built transaction
+ */
+const buildParallelWithRayon = async (
+  transactionPlan: TransactionPlan,
+  witness: WitnessData,
+  fullViewingKey: FullViewingKey,
+  authData: AuthorizationData,
+): Promise<Transaction> => {
+  await activateOffscreen();
+
+  try {
+    const buildReq: InternalRequest<ParallelBuildMessage> = {
+      type: 'BUILD_PARALLEL',
+      request: {
+        transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+        witness: witness.toJson() as Jsonified<WitnessData>,
+        fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+        authData: authData.toJson() as Jsonified<AuthorizationData>,
+      },
+    };
+
+    const buildRes = await sendOffscreenMessage(buildReq);
+    return Transaction.fromJson(buildRes);
+  } finally {
+    await releaseOffscreen();
+  }
+};
+
+export const offscreenClient = { buildActions, buildParallelWithRayon };

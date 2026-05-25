@@ -45,7 +45,7 @@
     "@penumbra-zone/protobuf": "workspace:*"
   },
   "optionalDependencies": {
-    "@penumbra-zone/wasm": "workspace:*"
+    "@rotko/penumbra-wasm": "workspace:*"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
